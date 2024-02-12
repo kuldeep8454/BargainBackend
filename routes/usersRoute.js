@@ -44,7 +44,7 @@ router.post("/login", async (req, res) => {
 
     // if user is active
     if (user.status !== "active") {
-      throw new Error("The user account is blocked , please contact to admin!!");
+      throw new Error("Your Account has been Blocked, contact to maddeshiyakuldeep@gmail.com");
     }
 
 

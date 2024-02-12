@@ -5,7 +5,6 @@ const authMiddleware = require("../middlwares/authMiddleware");
 const cloudinary = require("../config/cloudinaryConfig");
 const multer = require("multer");
 const Notification = require("../models/notificationsModel");
-
 // add a new product
 router.post("/add-product", authMiddleware, async (req, res) => {
   try {
@@ -17,13 +16,14 @@ router.post("/add-product", authMiddleware, async (req, res) => {
     admins.forEach(async (admin) => {
       const newNotification = new Notification({
         user: admin._id,
-        message: `New Product added by ${req.user.name}`,
+        message: `New product added by ${req.user.name}`,
         title: "New Product",
         onClick: `/admin`,
         read: false,
       });
       await newNotification.save();
     });
+
     res.send({
       success: true,
       message: "Product added successfully",
@@ -36,8 +36,8 @@ router.post("/add-product", authMiddleware, async (req, res) => {
   }
 });
 
-// get all products
 
+// get all products
 router.post("/get-products", async (req, res) => {
   try {
     const { seller, category = [], age = [], status } = req.body;
@@ -51,8 +51,10 @@ router.post("/get-products", async (req, res) => {
 
     // filter by category
     if (category.length > 0) {
-      filters.category = { $in: category };
+      // Use $in for exact match and $options: 'i' for case-insensitive matching
+      filters.category = { $in: category.map(cat => new RegExp(cat, 'i')) };
     }
+
 
     // filter by age
     if (age.length > 0) {
@@ -66,17 +68,24 @@ router.post("/get-products", async (req, res) => {
     const products = await Product.find(filters)
       .populate("seller")
       .sort({ createdAt: -1 });
+
     res.send({
       success: true,
       data: products,
     });
   } catch (error) {
+    console.error('Error:', error);
     res.send({
       success: false,
       message: error.message,
     });
   }
 });
+
+
+
+
+
 
 // get a product by id
 router.get("/get-product-by-id/:id", async (req, res) => {
@@ -141,7 +150,7 @@ router.post(
     try {
       // upload image to cloudinary
       const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "BargainBazar",
+        folder: "sheymp",
       });
 
       const productId = req.body.productId;
@@ -191,6 +200,5 @@ router.put("/update-product-status/:id", authMiddleware, async (req, res) => {
     });
   }
 });
-
 
 module.exports = router;

@@ -9,7 +9,7 @@ router.post("/notify", authMiddleware, async (req, res) => {
     await newNotification.save();
     res.send({
       success: true,
-      message: "Notification added successfully",
+      message: "Notification added successfully !!",
     });
   } catch (error) {
     res.send({
@@ -19,7 +19,7 @@ router.post("/notify", authMiddleware, async (req, res) => {
   }
 });
 
-// get all notifications by user
+// get all notification by user
 router.get("/get-all-notifications", authMiddleware, async (req, res) => {
   try {
     const notifications = await Notification.find({
